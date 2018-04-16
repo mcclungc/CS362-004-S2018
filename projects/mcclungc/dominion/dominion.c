@@ -1006,11 +1006,12 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 			
       //discard card from hand
       discardCard(handPos, currentPlayer, state, 0);
-      return 0;
+      return 0;*/
 	//REFACTORED CARD VILLAGE	
     case village:
-		//return villageEffect(currentPlayer, state, handPos);
-		
+		return villageEffect(currentPlayer, state, handPos);
+      //ORIGINAL CODE COMMENTED OUT
+      /*	
       //+1 Card
       drawCard(currentPlayer, state);
 			
