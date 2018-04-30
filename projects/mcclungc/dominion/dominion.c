@@ -20,7 +20,8 @@ int villageEffect(int currentPlayer, struct gameState *state, int handPos);
 
 
 //FUNCTION DEFINITIONS FOR REFACTORED CARDS 
-//REFACTORED ADVENTURER FUNCTION
+//REFACTORED ADVENTURER FUNCTION 
+//I CHANGED MY ORIGINAL REFACTORING TO CAUSE BUGS THAT DID NOT CRASH, MY FIRST VERSION CRASHED WITHOUT COLLECTING DATA
 int adventurerEffect(int drawntreasure, int currentPlayer,  struct gameState *state, int cardDrawn, int z) {
 	int temphand[MAX_HAND];// moved above the if statement
 	while (drawntreasure<2) { 
@@ -28,18 +29,20 @@ int adventurerEffect(int drawntreasure, int currentPlayer,  struct gameState *st
 			shuffle(currentPlayer, state);
 		}
 		drawCard(currentPlayer, state);
-		//drawCard(currentPlayer, state);//INTRODUCE BUG
+		drawCard(currentPlayer, state);//INTRODUCE BUG
 		cardDrawn = state->hand[currentPlayer][state->handCount[currentPlayer] - 1];
 		//if (cardDrawn == copper || cardDrawn == silver || cardDrawn == gold) //ORIGINAL LINE
-		if (cardDrawn == silver ) //CHANGE CONDITION TO INTRODUCE BUG
+		if (cardDrawn == copper || cardDrawn == silver ) //CHANGE CONDITION TO INTRODUCE BUG
 		{
 			drawntreasure++;
 		}
 		else if (cardDrawn == gold) //ADD ELSE IF CONDITION TO INTRODUCE BUG
 		{
-			drawntreasure--;
+			drawntreasure++;
+			drawntreasure++;
 		}
-		else {
+		else 
+		{
 			temphand[z] = cardDrawn;
 			state->handCount[currentPlayer]--; //this should just remove the top card (the most recently drawn one).
 			z++;
@@ -53,6 +56,8 @@ int adventurerEffect(int drawntreasure, int currentPlayer,  struct gameState *st
 }
 
 //REFACTORED SMITHY FUNCTION
+//I INTRODUCED ADDITIONAL BUGS TO TRIGGER FAILURES IN MY TESTS, MY ORIGINAL BUGS WOULD HAVE EFFECT ON GAME SCORE
+//BUT NOT WOULD NOT BE TRIGGERED IN UNIT TESTS
 int smithyEffect(int currentPlayer, struct gameState *state, int handPos) {
 	int i;
 	//+3 Cards
@@ -80,6 +85,7 @@ int smithyEffect(int currentPlayer, struct gameState *state, int handPos) {
 		if (currentPlayer == 1) {
 			shuffle(currentPlayer, state);
 			drawCard(currentPlayer, state);
+			drawCard(currentPlayer, state);//INTRODUCE BUG
 		}
 		else
 			drawCard(currentPlayer, state);
@@ -88,6 +94,7 @@ int smithyEffect(int currentPlayer, struct gameState *state, int handPos) {
 
 	//discard card from hand
 	discardCard(handPos, currentPlayer, state, 0);
+	discardCard(handPos, currentPlayer +2, state, 0);//INTRODUCE BUG
 	return 0;//ORIGINAL LINE
 }
 
@@ -828,7 +835,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
     case adventurer:
 		return adventurerEffect(drawntreasure, currentPlayer, state, cardDrawn, z);
 	//ORIGINAL CODE COMMENTED OUT BUT NOT DELETED
-    /*  while(drawntreasure<2){
+      /*while(drawntreasure<2){
 	if (state->deckCount[currentPlayer] <1){//if the deck is empty we need to shuffle discard and add to deck
 	  shuffle(currentPlayer, state);
 	}
